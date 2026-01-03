@@ -4,6 +4,11 @@ import MusicPlayer from './MusicPlayer'
 import badSound from '../../resource/sound/bad.mp3'
 import video2019 from '../../resource/video/2019_4.MOV'
 import video2019_2 from '../../resource/video/2019_3.MP4'
+import video2020_1 from '../../resource/video/2020_1.MOV'
+import video2021_2 from '../../resource/video/2021_2.MOV'
+import video2021_3 from '../../resource/video/2021_3.mov'
+import imageSpecial from '../../resource/image/scence.jpg'
+import image2021_3 from '../../resource/image/2021_3.jpg'
 import nothingSound from '../../resource/sound/nothing.mp3'
 
 const Envelope = () => {
@@ -21,6 +26,10 @@ const Envelope = () => {
         answers: [],
         isFinished: false
     })
+
+    // Special Reveal State
+    const [showSpecialReveal, setShowSpecialReveal] = useState(false)
+    const [revealStep, setRevealStep] = useState(0) // 0: Text, 1: Video
 
     const [selectedChoice, setSelectedChoice] = useState(null)
 
@@ -45,6 +54,47 @@ const Envelope = () => {
                 { id: 1, text: "Stomach ache", isCorrect: false },
                 { id: 2, text: "Migraine", isCorrect: false },
                 { id: 3, text: "Pink eye", isCorrect: true }
+            ]
+        },
+        {
+            year: "2020_1",
+            text: "What is this place?",
+            media: video2020_1,
+            type: 'video',
+            choices: [
+                { id: 1, text: "Khao Kho", isCorrect: true },
+                { id: 2, text: "Suan Phueng", isCorrect: false },
+                { id: 3, text: "Chiang Mai", isCorrect: false }
+            ]
+        },
+        {
+            year: "2020_2",
+            text: "Guess what happens next..",
+            media: imageSpecial,
+            type: 'image',
+            reveal: {
+                text: "..take a look",
+                media: video2021_2
+            },
+            choices: [
+                { id: 1, text: "🐽", isCorrect: false },
+                { id: 2, text: "👅", isCorrect: true },
+                { id: 3, text: "🙉", isCorrect: false }
+            ]
+        },
+        {
+            year: "2021_3",
+            text: "And what happens next..",
+            media: image2021_3,
+            type: 'image',
+            reveal: {
+                text: "..really",
+                media: video2021_3
+            },
+            choices: [
+                { id: 1, text: "😝", isCorrect: false },
+                { id: 2, text: "🥹", isCorrect: false },
+                { id: 3, text: "😪", isCorrect: true }
             ]
         }
     ]
@@ -94,6 +144,22 @@ const Envelope = () => {
 
         const newScore = isCorrect ? quizState.score + 1 : quizState.score
 
+        // Check for special reveal logic (Generic)
+        if (currentQ.reveal) {
+            setQuizState({
+                ...quizState,
+                score: newScore,
+                answers: newAnswers
+            })
+            setShowSpecialReveal(true)
+
+            // Start sequence
+            setTimeout(() => {
+                setRevealStep(1) // Show video after text fade
+            }, 3000)
+            return
+        }
+
         if (quizState.step < questions.length - 1) {
             setQuizState({
                 ...quizState,
@@ -112,14 +178,32 @@ const Envelope = () => {
         }
     }
 
-    const showQuiz = introStep >= 3 && !quizState.isFinished
+    const handleFinishReveal = () => {
+        setShowSpecialReveal(false)
+        setRevealStep(0)
+        // Advance to next question or finish
+        if (quizState.step < questions.length - 1) {
+            setQuizState(prev => ({
+                ...prev,
+                step: prev.step + 1
+            }))
+            setSelectedChoice(null)
+        } else {
+            setQuizState(prev => ({
+                ...prev,
+                isFinished: true
+            }))
+        }
+    }
+
+    const showQuiz = introStep >= 3 && !quizState.isFinished && !showSpecialReveal
     const showResult = introStep >= 3 && quizState.isFinished
 
     return (
         <div className="envelope-wrapper">
             <MusicPlayer
                 src={currentSong}
-                AutoPlay={true}
+                AutoPlay={isOpen}
                 loop={isLooping}
                 onEnded={handleSongEnd}
             />
@@ -141,6 +225,42 @@ const Envelope = () => {
                 </div>
             ) : (
                 <>
+                    {/* Special Reveal Overlay */}
+                    {showSpecialReveal && (
+                        <div className="reveal-overlay">
+                            {revealStep === 0 && (
+                                <motion.h1
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 1.5 }}
+                                    className="reveal-text"
+                                >
+                                    {questions[quizState.step].reveal?.text}
+                                </motion.h1>
+                            )}
+
+                            {revealStep === 1 && (
+                                <motion.div
+                                    className="reveal-video-container"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                >
+                                    <video
+                                        src={questions[quizState.step].reveal?.media}
+                                        autoPlay
+                                        className="reveal-video"
+                                        onClick={(e) => {
+                                            e.target.paused ? e.target.play() : e.target.pause()
+                                        }}
+                                    />
+                                    <button className="next-btn reveal-next" onClick={handleFinishReveal}>
+                                        Next <span style={{ marginLeft: '5px' }}>→</span>
+                                    </button>
+                                </motion.div>
+                            )}
+                        </div>
+                    )}
+
                     {introStep < 3 && (
                         <div className="intro-text-container">
                             <motion.h2
@@ -162,17 +282,19 @@ const Envelope = () => {
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                         >
-                            <h1 className="year-header">{questions[quizState.step].year}</h1>
+                            <h1 className="year-header">{questions[quizState.step].year.split('_')[0]}</h1>
 
                             <div className="quiz-image-placeholder">
                                 {questions[quizState.step].type === 'video' ? (
                                     <video
                                         src={questions[quizState.step].media}
-                                        controls
                                         autoPlay
                                         playsInline
                                         muted
                                         loop
+                                        onClick={(e) => {
+                                            e.target.paused ? e.target.play() : e.target.pause()
+                                        }}
                                         style={{
                                             width: '100%',
                                             maxHeight: '40vh', // Limit height for iPhone screens
@@ -183,9 +305,16 @@ const Envelope = () => {
                                         }}
                                     />
                                 ) : (
-                                    <div style={{ width: '100%', height: '200px', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#aaa' }}>
-                                        Image Here
-                                    </div>
+                                    <img
+                                        src={questions[quizState.step].media}
+                                        alt="Quiz Media"
+                                        style={{
+                                            width: '100%',
+                                            maxHeight: '40vh',
+                                            borderRadius: '10px',
+                                            objectFit: 'contain'
+                                        }}
+                                    />
                                 )}
                             </div>
 
@@ -496,6 +625,52 @@ const Envelope = () => {
         color: #555;
         font-size: 1.2rem;
         margin-bottom: 1rem;
+    }
+
+    /* Special Reveal Overlay */
+    .reveal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background: black;
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+    }
+    
+    .reveal-text {
+        font-family: 'Great Vibes', cursive;
+        font-size: 3rem;
+        color: #FFB6C1;
+        text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+    }
+    
+    .reveal-video-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: black;
+    }
+    
+    .reveal-video {
+        width: 100%;
+        height: 80vh; /* Leave room for button */
+        object-fit: contain;
+    }
+    
+    .reveal-next {
+        margin-top: 20px;
+        z-index: 1001;
+        background: #d63384;
+        border: 2px solid white;
     }
 `}</style>
             <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
