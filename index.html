@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy 6th Anniversary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Great+Vibes&display=swap"
+    rel="stylesheet">
+  <!-- Lucide Icons (Loaded via CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      --primary: #FF69B4;
+      --bg-color: #FFF0F5;
+      --text-color: #4A4A4A;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: var(--bg-color);
+      font-family: 'Outfit', sans-serif;
+      overflow: hidden;
+      color: var(--text-color);
+    }
+
+    #app {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+      background: white;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* --- Login Screen --- */
+    #login-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #FFF0F5 0%, #E6E6FA 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(255, 105, 180, 0.15);
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .icon-wrapper {
+      background: #FFF0F5;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+    }
+
+    .passcode-input {
+      width: 100%;
+      padding: 12px;
+      font-size: 24px;
+      text-align: center;
+      letter-spacing: 8px;
+      border: 2px solid #EEE;
+      border-radius: 12px;
+      outline: none;
+      margin: 1rem 0;
+      box-sizing: border-box;
+      /* Fix padding issue */
+    }
+
+    .passcode-input.error {
+      border-color: #FF4444;
+      color: #FF4444;
+      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+
+      10%,
+      90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      20%,
+      80% {
+        transform: translate3d(2px, 0, 0);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translate3d(-4px, 0, 0);
+      }
+
+      40%,
+      60% {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+
+    /* --- Main Content (Envelope) --- */
+    #main-content {
+      display: none;
+      /* Hidden by default */
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #ffe6ea;
+      perspective: 1000px;
+      overflow-y: auto;
+    }
+
+    .envelope-container {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s;
+    }
+
+    .envelope {
+      width: 300px;
+      height: 200px;
+      position: relative;
+      background: #ff9a9e;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      margin-top: 50px;
+    }
+
+    .envelope::before {
+      /* Bottom flap */
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-bottom: 110px solid #ff758c;
+      border-radius: 0 0 10px 10px;
+      z-index: 3;
+    }
+
+    .envelope::after {
+      /* Side flaps */
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid #ff8fa3;
+      border-right: 150px solid transparent;
+      border-top: 100px solid transparent;
+      border-bottom: 100px solid #ff8fa3;
+      border-radius: 0 0 0 10px;
+      z-index: 2;
+    }
+
+    /* Fake right side flap using a separate div since ::after is used */
+    .side-flap-right {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-right: 150px solid #ff8fa3;
+      border-left: 150px solid transparent;
+      border-top: 100px solid transparent;
+      border-bottom: 100px solid #ff8fa3;
+      border-radius: 0 0 10px 0;
+      z-index: 2;
+    }
+
+    .flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 150px solid transparent;
+      border-right: 150px solid transparent;
+      border-top: 110px solid #ffccd5;
+      transform-origin: top;
+      z-index: 4;
+      transition: transform 0.6s ease;
+    }
+
+    .envelope.open .flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    .card-preview {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      height: 100px;
+      background: white;
+      z-index: 1;
+      border-radius: 5px 5px 0 0;
+      display: flex;
+      justify-content: center;
+      padding-top: 20px;
+      transition: transform 0.5s ease-out 0.4s;
+      /* Delay until flap opens */
+    }
+
+    .envelope.open .card-preview {
+      transform: translateX(-50%) translateY(-150px) scale(0.8);
+      opacity: 0;
+      /* Fade out as it expands to full screen */
+    }
+
+    .preview-text {
+      font-family: 'Great Vibes', cursive;
+      color: #d63384;
+      font-size: 1.2rem;
+    }
+
+    /* Full Screen Card */
+    #full-card {
+      display: none;
+      width: 90%;
+      max-width: 400px;
+      background: white;
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      animation: popUp 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+      margin: 2rem auto;
+      border: 1px solid #ffe6ea;
+      overflow-y: visible;
+    }
+
+    @keyframes popUp {
+      from {
+        opacity: 0;
+        transform: scale(0.5) translateY(100px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .title {
+      font-family: 'Great Vibes', cursive;
+      color: #d63384;
+      margin: 0 0 1.5rem 0;
+      font-size: 2.5rem;
+    }
+
+    .photo-frame {
+      padding: 10px;
+      background: white;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: rotate(-3deg);
+      margin-bottom: 2rem;
+      border: 1px solid #eee;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .message {
+      text-align: left;
+      font-size: 1.1rem;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* Music Button */
+    .music-btn {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.8);
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="app">
+    <!-- Music Player -->
+    <audio id="bg-music" loop>
+      <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+    </audio>
+    <button id="music-btn" class="music-btn" style="display: none;" onclick="toggleMusic()">
+      <i data-lucide="volume-x" id="vol-icon" color="#888"></i>
+    </button>
+
+    <!-- Login Screen -->
+    <div id="login-screen">
+      <!-- Decorative Heart -->
+      <div style="margin-bottom: 20px; animation: float 3s infinite ease-in-out;">
+        <i data-lucide="heart" fill="#FFB6C1" stroke="none" size="48" style="width: 48px; height: 48px;"></i>
+      </div>
+
+      <div class="login-card">
+        <div class="icon-wrapper">
+          <i data-lucide="lock" color="#FF69B4" style="width: 24px;"></i>
+        </div>
+        <h2 style="color: #FF69B4; margin: 0; font-weight: 600;">Our 6th Anniversary</h2>
+        <p style="color: #888; font-size: 0.9rem; margin-bottom: 1.5rem;">Enter the magic number</p>
+
+        <input type="tel" id="passcode" class="passcode-input" placeholder="******" maxlength="6">
+        <p id="error-msg" style="color: #FF4444; font-size: 0.8rem; height: 1rem;"></p>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content">
+      <div class="envelope-container" id="envelope" onclick="openEnvelope()">
+        <div class="envelope">
+          <div class="side-flap-right"></div>
+          <div class="card-preview">
+            <div class="preview-text">Focus Here</div>
+          </div>
+          <div class="flap"></div>
+        </div>
+        <p style="margin-top: 60px; color: #ff758c; animation: pulse 2s infinite;">Tap to Open</p>
+      </div>
+
+      <div id="full-card">
+        <h1 class="title">Happy 6th Anniversary!</h1>
+
+        <div class="photo-frame">
+          <!-- REPLACE THESE 5 URLS IN THE SCRIPT BELOW WITH YOUR PHOTOS -->
+          <img id="carousel-img"
+            src="https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=600&auto=format&fit=crop" alt="Us">
+        </div>
+
+        <div class="message">
+          <p>To Bebe 🐽,</p>
+          <br>
+          <p>
+            Thanks for being with me for 6 years. You're the most special person to me.
+            Love you so much na kub ❤️
+          </p>
+          <br>
+          <p>Forever yours,</p>
+          <p>Bebe</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logic -->
+  <script>
+    // Init Icons
+    lucide.createIcons();
+
+    // Constants
+    const CORRECT_CODE = '181262';
+    const passcodeIn = document.getElementById('passcode');
+    const loginScreen = document.getElementById('login-screen');
+    const mainContent = document.getElementById('main-content');
+    const errorMsg = document.getElementById('error-msg');
+
+    // Music Logic
+    const audio = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-btn');
+    let isMusicPlaying = false;
+
+    function toggleMusic() {
+      if (isMusicPlaying) {
+        audio.pause();
+        document.getElementById('vol-icon').setAttribute('data-lucide', 'volume-x');
+        document.getElementById('vol-icon').setAttribute('color', '#888');
+      } else {
+        audio.play();
+        document.getElementById('vol-icon').setAttribute('data-lucide', 'volume-2');
+        document.getElementById('vol-icon').setAttribute('color', '#FF69B4');
+      }
+      isMusicPlaying = !isMusicPlaying;
+      lucide.createIcons();
+    }
+
+    // Login Logic
+    passcodeIn.addEventListener('input', (e) => {
+      const val = e.target.value;
+      passcodeIn.classList.remove('error');
+      errorMsg.innerText = "";
+
+      if (val.length === 6) {
+        if (val === CORRECT_CODE) {
+          successLogin();
+        } else {
+          passcodeIn.classList.add('error');
+          errorMsg.innerText = "Hmm, try our date? (DDMMYY)";
+          setTimeout(() => {
+            passcodeIn.value = "";
+            passcodeIn.classList.remove('error');
+          }, 600);
+        }
+      }
+    });
+
+    function successLogin() {
+      // Fade out login
+      loginScreen.style.opacity = '0';
+      setTimeout(() => {
+        loginScreen.style.display = 'none';
+        mainContent.style.display = 'flex';
+        musicBtn.style.display = 'block';
+
+        // Try auto play music
+        audio.play().then(() => {
+          isMusicPlaying = true;
+          document.getElementById('vol-icon').setAttribute('data-lucide', 'volume-2');
+          document.getElementById('vol-icon').setAttribute('color', '#FF69B4');
+          lucide.createIcons();
+        }).catch(() => {
+          console.log("Auto-play blocked");
+        });
+      }, 500);
+    }
+
+    // Envelope Logic
+    let isEnvelopeOpen = false;
+    function openEnvelope() {
+      if (isEnvelopeOpen) return;
+      isEnvelopeOpen = true;
+
+      const envelope = document.querySelector('.envelope');
+      const envelopeContainer = document.getElementById('envelope');
+      const fullCard = document.getElementById('full-card');
+
+      // 1. Open Flap
+      envelope.classList.add('open');
+
+      // 2. Wait for flap, then expand
+      setTimeout(() => {
+        envelopeContainer.style.display = 'none'; // Hide envelope
+        fullCard.style.display = 'block'; // Show Card
+      }, 800);
+    }
+
+    // Carousel Logic
+    const carouselImages = [
+      "https://images.unsplash.com/photo-1518568814500-bf0f8d125f46?q=80&w=600&auto=format&fit=crop", // Image 1
+      "https://images.unsplash.com/photo-1583934555035-1896377e6e58?q=80&w=600&auto=format&fit=crop", // Image 2
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=600&auto=format&fit=crop", // Image 3
+      "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=600&auto=format&fit=crop", // Image 4
+      "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=600&auto=format&fit=crop"  // Image 5
+    ];
+    let currentImageIndex = 0;
+    const carouselImg = document.getElementById('carousel-img');
+
+    function startCarousel() {
+      setInterval(() => {
+        if (!carouselImg) return;
+
+        // Fade out
+        carouselImg.style.opacity = '0';
+
+        setTimeout(() => {
+          // Change image
+          currentImageIndex = (currentImageIndex + 1) % carouselImages.length;
+          carouselImg.src = carouselImages[currentImageIndex];
+
+          // Fade in (wait slight moment for src to load ideally, but simple is fine)
+          carouselImg.onload = () => {
+            carouselImg.style.opacity = '1';
+          };
+          // Fallback if cached/fast
+          setTimeout(() => carouselImg.style.opacity = '1', 50);
+        }, 500); // Wait for fade out transition (0.5s)
+
+      }, 2000); // Every 2 seconds
+    }
+
+    // Start Carousel immediately
+    startCarousel();
+
+    // Floating Animation Keyframes (added via JS to keep CSS clean above if needed, but CSS handles it)
+    // Shake defined in CSS
+  </script>
+</body>
+
+</html>
