@@ -2,11 +2,15 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import MusicPlayer from './MusicPlayer'
 
+import badSound from '../../resource/sound/bad.mp3'
+
 const Envelope = () => {
     const [isOpen, setIsOpen] = useState(false)
 
     const handleOpen = () => {
         setIsOpen(true)
+        const audio = new Audio(badSound)
+        audio.play()
     }
 
     return (
