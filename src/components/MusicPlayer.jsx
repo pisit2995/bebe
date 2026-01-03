@@ -1,20 +1,47 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Music, VolumeX, Volume2 } from 'lucide-react'
 
-const MusicPlayer = () => {
-    const [isPlaying, setIsPlaying] = useState(false)
+const MusicPlayer = ({ src, AutoPlay, onEnded, loop = true }) => {
+    const [isPlaying, setIsPlaying] = useState(AutoPlay || false)
     const audioRef = useRef(null)
 
     useEffect(() => {
-        // Attempt auto-play on mount (may be blocked)
-        if (audioRef.current) {
-            audioRef.current.play().then(() => {
-                setIsPlaying(true)
-            }).catch(e => {
-                console.log("Autoplay blocked, waiting for interaction")
-            })
+        if (AutoPlay && audioRef.current) {
+            const playAudio = () => {
+                audioRef.current.play().then(() => {
+                    setIsPlaying(true)
+                }).catch(() => {
+                    setIsPlaying(false)
+                })
+            }
+
+            playAudio()
+
+            // Retry on interaction if blocked
+            const handleInteraction = () => {
+                playAudio()
+                document.removeEventListener('click', handleInteraction)
+                document.removeEventListener('keydown', handleInteraction)
+            }
+
+            document.addEventListener('click', handleInteraction)
+            document.addEventListener('keydown', handleInteraction)
+
+            return () => {
+                document.removeEventListener('click', handleInteraction)
+                document.removeEventListener('keydown', handleInteraction)
+            }
         }
-    }, [])
+    }, [AutoPlay])
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.src = src;
+            if (isPlaying) {
+                audioRef.current.play().catch(() => setIsPlaying(false));
+            }
+        }
+    }, [src])
 
     const togglePlay = () => {
         if (audioRef.current) {
@@ -29,8 +56,12 @@ const MusicPlayer = () => {
 
     return (
         <div className="music-player">
-            <audio ref={audioRef} loop>
-                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3" />
+            <audio
+                ref={audioRef}
+                loop={loop}
+                onEnded={onEnded}
+            >
+                <source src={src} type="audio/mp3" />
                 Your browser does not support the audio element.
             </audio>
 

@@ -3,56 +3,56 @@ import { motion } from 'framer-motion'
 import { Lock, Heart } from 'lucide-react'
 
 const Login = ({ onLogin }) => {
-    const [passcode, setPasscode] = useState('')
-    const [error, setError] = useState(false)
+  const [passcode, setPasscode] = useState('')
+  const [error, setError] = useState(false)
 
-    const correctCode = '181262'
+  const correctCode = '181262'
 
-    const handleChange = (e) => {
-        const value = e.target.value
-        if (value.length <= 6) {
-            setPasscode(value)
-            setError(false)
+  const handleChange = (e) => {
+    const value = e.target.value
+    if (value.length <= 6) {
+      setPasscode(value)
+      setError(false)
 
-            if (value === correctCode) {
-                onLogin()
-            } else if (value.length === 6) {
-                setError(true)
-                setTimeout(() => setPasscode(''), 500)
-            }
-        }
+      if (value === correctCode) {
+        onLogin()
+      } else if (value.length === 6) {
+        setError(true)
+        setTimeout(() => setPasscode(''), 500)
+      }
     }
+  }
 
-    return (
-        <div className="login-container">
-            <div className="decoration">
-                <Heart className="heart-icon floating" fill="#FFB6C1" stroke="none" size={48} />
-            </div>
+  return (
+    <div className="login-container">
+      <div className="decoration">
+        <Heart className="heart-icon floating" fill="#FFB6C1" stroke="none" size={48} />
+      </div>
 
-            <motion.div
-                className="login-card"
-                animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
-            >
-                <div className="icon-wrapper">
-                    <Lock size={32} color="#FF69B4" />
-                </div>
-                <h2>Our 6th Anniversary</h2>
-                <p>Enter the magic number</p>
+      <motion.div
+        className="login-card"
+        animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
+      >
+        <div className="icon-wrapper">
+          <Lock size={32} color="#FF69B4" />
+        </div>
+        <h2>Our 6th Anniversary</h2>
+        <p>Enter the magic number</p>
 
-                <input
-                    type="tel"
-                    value={passcode}
-                    onChange={handleChange}
-                    placeholder="******"
-                    className={`passcode-input ${error ? 'error' : ''}`}
-                    maxLength={6}
-                    autoFocus
-                />
+        <input
+          type="tel"
+          value={passcode}
+          onChange={handleChange}
+          placeholder="******"
+          className={`passcode-input ${error ? 'error' : ''}`}
+          maxLength={6}
+          autoFocus
+        />
 
-                {error && <p className="error-msg">Hmm, try our date? (DDMMYY)</p>}
-            </motion.div>
+        {error && <p className="error-msg">Hmm, try our date? (DDMMYY)</p>}
+      </motion.div>
 
-            <style>{`
+      <style>{`
         .login-container {
           display: flex;
           flex-direction: column;
@@ -134,8 +134,8 @@ const Login = ({ onLogin }) => {
           top: 15%;
         }
       `}</style>
-        </div>
-    )
+    </div>
+  )
 }
 
 export default Login
