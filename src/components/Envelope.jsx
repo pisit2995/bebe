@@ -7,8 +7,10 @@ import video2019_2 from '../../resource/video/2019_3.MP4'
 import video2020_1 from '../../resource/video/2020_1_opt.mp4'
 import video2021_2 from '../../resource/video/2021_2_opt.mp4'
 import video2021_3 from '../../resource/video/2021_3_opt.mp4'
-import imageSpecial from '../../resource/image/scence.jpg'
-import image2021_3 from '../../resource/image/2021_3.jpg'
+import imageSpecial from '../../resource/image/scence_opt.jpg'
+import image2021_3 from '../../resource/image/2021_3_opt.jpg'
+import image2021_4 from '../../resource/image/2021_4_opt.jpg'
+import video2021_4 from '../../resource/video/2021_4_opt.mp4'
 import nothingSound from '../../resource/sound/nothing.mp3'
 
 const Envelope = () => {
@@ -95,6 +97,21 @@ const Envelope = () => {
                 { id: 1, text: "😝", isCorrect: false },
                 { id: 2, text: "🥹", isCorrect: false },
                 { id: 3, text: "😪", isCorrect: true }
+            ]
+        },
+        {
+            year: "2021_4",
+            text: "And Then...",
+            media: image2021_4,
+            type: 'image',
+            reveal: {
+                text: "we have 🐭",
+                media: video2021_4
+            },
+            choices: [
+                { id: 1, text: "🐼", isCorrect: false },
+                { id: 2, text: "🐭", isCorrect: true },
+                { id: 3, text: "👶", isCorrect: false }
             ]
         }
     ]
@@ -276,12 +293,14 @@ const Envelope = () => {
                         </div>
                     )}
 
+                    {/* Quiz Card Content */}
                     {showQuiz && (
                         <motion.div
                             className="quiz-card"
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                         >
+                            {/* Standard Quiz Content */}
                             <h1 className="year-header">{questions[quizState.step].year.split('_')[0]}</h1>
 
                             <div className="quiz-image-placeholder">
@@ -662,7 +681,7 @@ const Envelope = () => {
     
     .reveal-video {
         width: 100%;
-        height: 80vh; /* Leave room for button */
+        height: 60vh; /* Controlled height */
         object-fit: contain;
     }
     
@@ -672,7 +691,8 @@ const Envelope = () => {
         background: #d63384;
         border: 2px solid white;
     }
-`}</style>
+
+ `}</style>
             <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
         </div >
     )
