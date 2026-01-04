@@ -265,6 +265,8 @@ const Envelope = () => {
                                     <video
                                         src={questions[quizState.step].reveal?.media}
                                         autoPlay
+                                        playsInline
+                                        muted
                                         className="reveal-video"
                                         onClick={(e) => {
                                             e.target.paused ? e.target.play() : e.target.pause()
