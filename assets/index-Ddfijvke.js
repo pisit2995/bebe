@@ -418,20 +418,20 @@ Error generating stack: `+o.message+`
         left: 0;
         width: 100%;
         height: 100vh;
-        background: black;
+        background: #ffe6ea;
         z-index: 1000;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        color: white;
+        color: #555;
     }
     
     .reveal-text {
         font-family: 'Great Vibes', cursive;
         font-size: 3rem;
-        color: #FFB6C1;
-        text-shadow: 0 0 10px rgba(255, 182, 193, 0.5);
+        color: #d63384;
+        text-shadow: none;
     }
     
     .reveal-video-container {
@@ -441,20 +441,27 @@ Error generating stack: `+o.message+`
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: black;
+        background: transparent;
     }
     
     .reveal-video {
-        width: 100%;
-        height: 60vh; /* Controlled height */
+        width: 90%;
+        max-width: 400px;
+        height: auto;
+        max-height: 60vh;
         object-fit: contain;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        background: white;
     }
     
     .reveal-next {
         margin-top: 20px;
         z-index: 1001;
-        background: #d63384;
-        border: 2px solid white;
+        background: #FF69B4;
+        border: none;
+        color: white;
+        box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
     }
 
  `}),V.jsx("link",{href:"https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap",rel:"stylesheet"})]})};function Gx(){const[e,t]=D.useState(!1),n=()=>{t(!0)};return V.jsx(V.Fragment,{children:e?V.jsx(Qx,{}):V.jsx(_x,{onLogin:n})})}Vs.createRoot(document.getElementById("root")).render(V.jsx(zl.StrictMode,{children:V.jsx(Gx,{})}));
