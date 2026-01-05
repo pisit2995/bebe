@@ -11,6 +11,7 @@ import imageSpecial from '../../resource/image/scence_opt.jpg'
 import image2021_3 from '../../resource/image/2021_3_opt.jpg'
 import image2021_4 from '../../resource/image/2021_4_opt.jpg'
 import video2021_4 from '../../resource/video/2021_4_opt.mp4'
+import video2022_1 from '../../resource/video/2022_1_opt.mp4'
 import nothingSound from '../../resource/sound/nothing.mp3'
 
 const Envelope = () => {
@@ -32,6 +33,7 @@ const Envelope = () => {
     // Special Reveal State
     const [showSpecialReveal, setShowSpecialReveal] = useState(false)
     const [revealStep, setRevealStep] = useState(0) // 0: Text, 1: Video
+    const [transitionText, setTransitionText] = useState(null)
 
     const [selectedChoice, setSelectedChoice] = useState(null)
 
@@ -113,6 +115,18 @@ const Envelope = () => {
                 { id: 2, text: "🐭", isCorrect: true },
                 { id: 3, text: "👶", isCorrect: false }
             ]
+        },
+        {
+            year: "2022_1",
+            text: "Do you remember this moment? \n Where do we go?",
+            media: video2022_1,
+            type: 'video',
+            chapterIntro: "We grow together ✨",
+            choices: [
+                { id: 1, text: "Petchaburi", isCorrect: false },
+                { id: 2, text: "Chonburi", isCorrect: false },
+                { id: 3, text: "Kanjanaburi", isCorrect: true }
+            ]
         }
     ]
 
@@ -160,6 +174,32 @@ const Envelope = () => {
         }]
 
         const newScore = isCorrect ? quizState.score + 1 : quizState.score
+
+        // Check for transition text (Generic Chapter Intro)
+        const nextStepIndex = quizState.step + 1
+        if (nextStepIndex < questions.length) {
+            const nextQ = questions[nextStepIndex]
+
+            if (nextQ.chapterIntro) {
+                // Show transition first
+                setTransitionText(nextQ.chapterIntro)
+
+                // Advance state but keep card hidden via transitionText check
+                setQuizState({
+                    ...quizState,
+                    step: nextStepIndex,
+                    score: newScore,
+                    answers: newAnswers
+                })
+                setSelectedChoice(null)
+
+                // Hide transition after delay
+                setTimeout(() => {
+                    setTransitionText(null)
+                }, 3000)
+                return
+            }
+        }
 
         // Check for special reveal logic (Generic)
         if (currentQ.reveal) {
@@ -295,8 +335,24 @@ const Envelope = () => {
                         </div>
                     )}
 
+                    {/* Transition Text Overlay */}
+                    {transitionText && (
+                        <div className="intro-text-container">
+                            <motion.h2
+                                key="transition"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 1 }}
+                                className="intro-text"
+                            >
+                                {transitionText}
+                            </motion.h2>
+                        </div>
+                    )}
+
                     {/* Quiz Card Content */}
-                    {showQuiz && (
+                    {(showQuiz && !transitionText) && (
                         <motion.div
                             className="quiz-card"
                             initial={{ opacity: 0, scale: 0.9 }}
